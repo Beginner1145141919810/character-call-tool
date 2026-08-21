@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>呼称検索</title>
+
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f5f5f7;
+      color: #222;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Helvetica Neue",
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        Meiryo,
+        sans-serif;
+    }
+
+    .container {
+      width: min(680px, 100%);
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      text-align: center;
+    }
+
+    .description {
+      margin: 0 0 24px;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+
+    .file-area {
+      text-align: center;
+    }
+
+    .file-button {
+      display: inline-block;
+      padding: 12px 18px;
+      background: #007aff;
+      color: white;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    #fileStatus {
+      margin-top: 12px;
+      color: #666;
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .field {
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      background: white;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: #007aff;
+      box-shadow: 0 0 0 3px rgba(0,122,255,0.12);
+    }
+
+    .suggestions {
+      position: absolute;
+      z-index: 10;
+      left: 0;
+      right: 0;
+      top: 74px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+    }
+
+    .suggestion {
+      padding: 12px 14px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+
+    .suggestion:last-child {
+      border-bottom: none;
+    }
+
+    .suggestion:active {
+      background: #f0f0f0;
+    }
+
+    .swap-area {
+      text-align: center;
+      margin: -4px 0 10px;
+    }
+
+    .swap-button {
+      width: 48px;
+      height: 48px;
+      border: none;
+      border-radius: 50%;
+      background: #eee;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .swap-button:active {
+      background: #ddd;
+      transform: scale(0.96);
+    }
+
+    .result {
+      text-align: center;
+      padding: 24px 10px;
+      background: #f8f8fa;
+      border-radius: 12px;
+    }
+
+    .result-direction {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 12px;
+      word-break: break-word;
+    }
+
+    .result-word {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .result-placeholder {
+      color: #aaa;
+      font-size: 16px;
+      font-weight: normal;
+    }
+
+    .error {
+      color: #d00;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .help {
+      color: #666;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .help strong {
+      color: #333;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 18px 12px 32px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      .result-word {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <h1>呼称検索</h1>
+    <p class="description">
+      Excelの呼称表を読み込んで、キャラクター同士の呼び方を検索します。
+    </p>
+
+    <div class="card">
+      <div class="file-area">
+        <label class="file-button" for="fileInput">
+          呼称表を選択
+        </label>
+
+        <input
+          id="fileInput"
+          type="file"
+          accept=".xlsx,.xls,.csv"
+        >
+
+        <div id="fileStatus">
+          まだ呼称表が読み込まれていません。
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+
+      <div class="field">
+        <label class="field-label" for="caller">
+          呼ぶ側
+        </label>
+
+        <input
+          id="caller"
+          type="text"
+          placeholder="キャラクター名を入力"
+          autocomplete="off"
+        >
+
+        <div id="callerSuggestions" class="suggestions" hidden></div>
+      </div>
+
+      <div class="swap-area">
+        <button
+          id="swapButton"
+          class="swap-button"
+          type="button"
+          aria-label="呼ぶ側と呼ばれる側を入れ替える"
+        >
+          ↕
+        </button>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="target">
+          呼ばれる側
+        </label>
+
+        <input
+          id="target"
+          type="text"
+          placeholder="キャラクター名を入力"
+          autocomplete="off"
+        >
+
+        <div id="targetSuggestions" class="suggestions" hidden></div>
+      </div>
+
+      <div class="result">
+        <div id="resultDirection" class="result-direction">
+          呼称表を読み込んでください
+        </div>
+
+        <div id="resultWord" class="result-word">
+          <span class="result-placeholder">
+            呼び方がここに表示されます
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card help">
+      <strong>Excelの形式</strong><br><br>
+
+      1行目：呼ばれる側のキャラクター名<br>
+      1列目：呼ぶ側のキャラクター名<br>
+      交差するセル：その呼び方
+      <br><br>
+
+      例：<br>
+      「アリス」の行 × 「ボブ」の列に
+      「ボブさん」と入力すると、
+      アリス → ボブの呼び方が「ボブさん」になります。
+    </div>
+
+  </div>
+
+  <script>
+    let callTable = {};
+    let characters = [];
+
+    const fileInput = document.getElementById("fileInput");
+    const fileStatus = document.getElementById("fileStatus");
+
+    const callerInput = document.getElementById("caller");
+    const targetInput = document.getElementById("target");
+
+    const callerSuggestions =
+      document.getElementById("callerSuggestions");
+
+    const targetSuggestions =
+      document.getElementById("targetSuggestions");
+
+    const swapButton =
+      document.getElementById("swapButton");
+
+    const resultDirection =
+      document.getElementById("resultDirection");
+
+    const resultWord =
+      document.getElementById("resultWord");
+
+
+    // --------------------------------
+    // Excel / CSV読み込み
+    // --------------------------------
+
+    fileInput.addEventListener("change", async function(event) {
+      const file = event.target.files[0];
+
+      if (!file) return;
+
+      try {
+        fileStatus.textContent = "読み込み中……";
+
+        const data = await file.arrayBuffer();
+
+        const workbook = XLSX.read(data, {
+          type: "array"
+        });
+
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+
+        const rows = XLSX.utils.sheet_to_json(sheet, {
+          header: 1,
+          defval: ""
+        });
+
+        loadTable(rows);
+
+        fileStatus.textContent =
+          `${file.name} を読み込みました。キャラクター ${characters.length}人`;
+
+        updateResult();
+
+      } catch (error) {
+        console.error(error);
+
+        fileStatus.textContent =
+          "ファイルを読み込めませんでした。Excelの形式を確認してください。";
+
+        callTable = {};
+        characters = [];
+      }
+    });
+
+
+    // --------------------------------
+    // 表データを内部データに変換
+    // --------------------------------
+
+    function loadTable(rows) {
+
+      callTable = {};
+      characters = [];
+
+      if (!rows || rows.length < 2) {
+        throw new Error("表のデータが不足しています。");
+      }
+
+      const header = rows[0];
+
+      for (let col = 1; col < header.length; col++) {
+
+        const name = String(header[col] ?? "").trim();
+
+        if (name !== "") {
+          characters.push(name);
+        }
+      }
+
+      for (let row = 1; row < rows.length; row++) {
+
+        const caller =
+          String(rows[row][0] ?? "").trim();
+
+        if (!caller) continue;
+
+        if (!characters.includes(caller)) {
+          characters.push(caller);
+        }
+
+        if (!callTable[caller]) {
+          callTable[caller] = {};
+        }
+
+        for (let col = 1; col < header.length; col++) {
+
+          const target =
+            String(header[col] ?? "").trim();
+
+          if (!target) continue;
+
+          const value =
+            String(rows[row][col] ?? "").trim();
+
+          callTable[caller][target] = value;
+        }
+      }
+
+      // 重複を除去
+      characters = [...new Set(characters)];
+    }
+
+
+    // --------------------------------
+    // 候補表示
+    // --------------------------------
+
+    function showSuggestions(input, box) {
+
+      const keyword = input.value.trim().toLowerCase();
+
+      box.innerHTML = "";
+
+      if (!keyword || characters.length === 0) {
+        box.hidden = true;
+        return;
+      }
+
+      const matches = characters
+        .filter(name =>
+          name.toLowerCase().includes(keyword)
+        )
+        .slice(0, 20);
+
+      if (matches.length === 0) {
+        box.hidden = true;
+        return;
+      }
+
+      matches.forEach(name => {
+
+        const item = document.createElement("div");
+
+        item.className = "suggestion";
+        item.textContent = name;
+
+        item.addEventListener("click", () => {
+
+          input.value = name;
+          box.hidden = true;
+
+          updateResult();
+        });
+
+        box.appendChild(item);
+      });
+
+      box.hidden = false;
+    }
+
+
+    callerInput.addEventListener("input", () => {
+      showSuggestions(callerInput, callerSuggestions);
+      updateResult();
+    });
+
+    targetInput.addEventListener("input", () => {
+      showSuggestions(targetInput, targetSuggestions);
+      updateResult();
+    });
+
+
+    // --------------------------------
+    // 入れ替え
+    // --------------------------------
+
+    swapButton.addEventListener("click", () => {
+
+      const temp = callerInput.value;
+
+      callerInput.value = targetInput.value;
+      targetInput.value = temp;
+
+      callerSuggestions.hidden = true;
+      targetSuggestions.hidden = true;
+
+      updateResult();
+    });
+
+
+    // --------------------------------
+    // 呼称検索
+    // --------------------------------
+
+    function updateResult() {
+
+      const caller = callerInput.value.trim();
+      const target = targetInput.value.trim();
+
+      if (!caller || !target) {
+
+        resultDirection.textContent =
+          "呼ぶ側と呼ばれる側を入力してください。";
+
+        resultWord.innerHTML =
+          '<span class="result-placeholder">' +
+          '呼び方がここに表示されます' +
+          '</span>';
+
+        return;
+      }
+
+      resultDirection.textContent =
+        `${caller} → ${target}`;
+
+      if (!callTable[caller]) {
+
+        resultWord.innerHTML =
+          '<span class="result-placeholder">' +
+          '呼ぶ側が見つかりません' +
+          '</span>';
+
+        return;
+      }
+
+      const value = callTable[caller][target];
+
+      if (value === undefined || value === "") {
+
+        resultWord.innerHTML =
+          '<span class="result-placeholder">' +
+          '未登録' +
+          '</span>';
+
+        return;
+      }
+
+      resultWord.textContent = value;
+    }
+
+
+    // --------------------------------
+    // 画面外をタップしたら候補を閉じる
+    // --------------------------------
+
+    document.addEventListener("click", function(event) {
+
+      if (
+        !callerInput.contains(event.target) &&
+        !callerSuggestions.contains(event.target)
+      ) {
+        callerSuggestions.hidden = true;
+      }
+
+      if (
+        !targetInput.contains(event.target) &&
+        !targetSuggestions.contains(event.target)
+      ) {
+        targetSuggestions.hidden = true;
+      }
+    });
+
+  </script>
+</body>
+</html>
