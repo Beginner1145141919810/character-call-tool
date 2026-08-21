@@ -197,7 +197,14 @@
     .help strong {
       color: #333;
     }
-
+.excel-example {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+    
     @media (max-width: 480px) {
       .container {
         padding: 18px 12px 32px;
@@ -301,21 +308,28 @@
 
     </div>
 
-    <div class="card help">
-      <strong>Excelの形式</strong><br><br>
+ <div class="card help">
+  <strong>Excelの作り方</strong><br><br>
 
-      1行目：呼ばれる側のキャラクター名<br>
-      1列目：呼ぶ側のキャラクター名<br>
-      交差するセル：その呼び方
-      <br><br>
+  1行目（横軸）：呼ばれる側のキャラクター名<br>
+  1列目（縦軸）：呼ぶ側のキャラクター名<br>
+  交差するセル：その呼び方
+  <br><br>
 
-      例：<br>
-      「アリス」の行 × 「ボブ」の列に
-      「ボブさん」と入力すると、
-      アリス → ボブの呼び方が「ボブさん」になります。
-    </div>
+  <strong>お手本</strong><br><br>
 
-  </div>
+  <img
+    src="./IMG_0784.jpeg"
+    alt="Excelで作成する呼称表の例"
+    class="excel-example"
+  >
+
+  <br><br>
+
+  例えば「Aさん」が「Bさん」を呼ぶ場合は、
+  「Aさん」の行と「Bさん」の列が交差するセルに
+  呼び方を入力します。
+</div>
 
   <script>
     let callTable = {};
