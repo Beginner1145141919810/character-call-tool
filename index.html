@@ -153,8 +153,7 @@
     }
 
     .result {
-      text-align: center;
-      padding: 24px 10px;
+      padding: 24px 16px;
       background: #f8f8fa;
       border-radius: 12px;
     }
@@ -162,17 +161,38 @@
     .result-direction {
       color: #666;
       font-size: 14px;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
+      text-align: center;
       word-break: break-word;
     }
 
-    .result-word {
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 30px;
+    /*
+     * 呼び方表示
+     */
+
+    .result-call {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .result-call:last-child {
+      margin-bottom: 0;
+    }
+
+    .result-call-label {
+      color: #888;
+      font-size: 12px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .result-call-word {
+      font-size: 28px;
       font-weight: 700;
+      line-height: 1.4;
       word-break: break-word;
     }
 
@@ -197,15 +217,34 @@
     .help strong {
       color: #333;
     }
-.excel-example {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
-    
+
+    .excel-example {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    /*
+     * Excel記入例
+     */
+
+    .example-box {
+      background: #f8f8fa;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 10px;
+      overflow-x: auto;
+    }
+
+    .example-box code {
+      font-family: monospace;
+      color: #333;
+    }
+
     @media (max-width: 480px) {
+
       .container {
         padding: 18px 12px 32px;
       }
@@ -218,7 +257,7 @@
         padding: 16px;
       }
 
-      .result-word {
+      .result-call-word {
         font-size: 26px;
       }
     }
@@ -226,15 +265,24 @@
 </head>
 
 <body>
+
   <div class="container">
 
     <h1>呼称検索</h1>
+
     <p class="description">
       Excelの呼称表を読み込んで、キャラクター同士の呼び方を検索します。
     </p>
 
+
+    <!-- ============================= -->
+    <!-- Excel読み込み -->
+    <!-- ============================= -->
+
     <div class="card">
+
       <div class="file-area">
+
         <label class="file-button" for="fileInput">
           呼称表を選択
         </label>
@@ -248,12 +296,23 @@
         <div id="fileStatus">
           まだ呼称表が読み込まれていません。
         </div>
+
       </div>
+
     </div>
+
+
+    <!-- ============================= -->
+    <!-- 検索 -->
+    <!-- ============================= -->
 
     <div class="card">
 
+
+      <!-- 呼ぶ側 -->
+
       <div class="field">
+
         <label class="field-label" for="caller">
           呼ぶ側
         </label>
@@ -265,10 +324,19 @@
           autocomplete="off"
         >
 
-        <div id="callerSuggestions" class="suggestions" hidden></div>
+        <div
+          id="callerSuggestions"
+          class="suggestions"
+          hidden
+        ></div>
+
       </div>
 
+
+      <!-- 入れ替え -->
+
       <div class="swap-area">
+
         <button
           id="swapButton"
           class="swap-button"
@@ -277,9 +345,14 @@
         >
           ↕
         </button>
+
       </div>
 
+
+      <!-- 呼ばれる側 -->
+
       <div class="field">
+
         <label class="field-label" for="target">
           呼ばれる側
         </label>
@@ -291,55 +364,222 @@
           autocomplete="off"
         >
 
-        <div id="targetSuggestions" class="suggestions" hidden></div>
+        <div
+          id="targetSuggestions"
+          class="suggestions"
+          hidden
+        ></div>
+
       </div>
 
+
+      <!-- ============================= -->
+      <!-- 結果 -->
+      <!-- ============================= -->
+
       <div class="result">
-        <div id="resultDirection" class="result-direction">
+
+        <div
+          id="resultDirection"
+          class="result-direction"
+        >
           呼称表を読み込んでください
         </div>
 
-        <div id="resultWord" class="result-word">
-          <span class="result-placeholder">
-            呼び方がここに表示されます
-          </span>
+
+        <div id="resultCalls">
+
+          <div class="result-call">
+
+            <div class="result-call-label">
+              基本
+            </div>
+
+            <div class="result-call-word">
+              <span class="result-placeholder">
+                呼び方がここに表示されます
+              </span>
+            </div>
+
+          </div>
+
         </div>
+
       </div>
 
     </div>
 
- <div class="card help">
-  <strong>Excelの作り方</strong><br><br>
 
-  1行目（横軸）：呼ばれる側のキャラクター名<br>
-  1列目（縦軸）：呼ぶ側のキャラクター名<br>
-  交差するセル：その呼び方
-  <br><br>
+    <!-- ============================= -->
+    <!-- 説明 -->
+    <!-- ============================= -->
 
-  <strong>お手本</strong><br><br>
+    <div class="card help">
 
-  <img
-    src="./IMG_0784.jpeg"
-    alt="Excelで作成する呼称表の例"
-    class="excel-example"
-  >
+      <strong>Excelの作り方</strong>
 
-  <br><br>
+      <br><br>
 
-  例えば「Aさん」が「Bさん」を呼ぶ場合は、
-  「Aさん」の行と「Bさん」の列が交差するセルに
-  呼び方を入力します。
-</div>
+      1行目（横軸）：呼ばれる側のキャラクター名<br>
+
+      1列目（縦軸）：呼ぶ側のキャラクター名<br>
+
+      交差するセル：その呼び方
+
+      <br><br>
+
+
+      <strong>キャラクター名に表記揺れがある場合</strong>
+
+      <br><br>
+
+      同じキャラクターを複数の名前で検索したい場合は、
+      キャラクター名をコンマ（,）で区切ってください。
+
+      <div class="example-box">
+        <code>鈴木,すずき</code>
+      </div>
+
+      <br>
+
+      この場合、サイトでは
+
+      <br>
+
+      「鈴木」
+
+      <br>
+
+      「すずき」
+
+      <br>
+
+      のどちらでも検索できます。
+
+      <br><br>
+
+      サイト上では「鈴木,すずき」とは表示されず、
+      ユーザーが入力・選択した名前がそのまま表示されます。
+
+
+      <br><br>
+
+
+      <strong>呼び方が複数ある場合</strong>
+
+      <br><br>
+
+      基本の呼び方と例外の呼び方を
+      コンマ（,）で区切ってください。
+
+      <div class="example-box">
+        <code>鈴木,お前（怒ってる時）</code>
+      </div>
+
+      <br>
+
+      この場合、サイトでは、
+
+      <br><br>
+
+      <strong>基本</strong><br>
+      鈴木
+
+      <br><br>
+
+      <strong>例外</strong><br>
+      お前（怒ってる時）
+
+      <br><br>
+
+      のように表示されます。
+
+
+      <br><br>
+
+
+      <strong>お手本</strong>
+
+      <br><br>
+
+      <img
+        src="./IMG_0784.jpeg"
+        alt="Excelで作成する呼称表の例"
+        class="excel-example"
+      >
+
+      <br><br>
+
+      例えば「Aさん」が「Bさん」を呼ぶ場合は、
+      「Aさん」の行と「Bさん」の列が交差するセルに
+      呼び方を入力します。
+
+    </div>
+
+
+  </div>
+
 
   <script>
+
+    // ========================================
+    // 内部データ
+    // ========================================
+
+    /*
+     * callTable
+     *
+     * Excel上のキャラクターを
+     * 内部的な名前で管理する。
+     */
     let callTable = {};
+
+
+    /*
+     * characters
+     *
+     * サイトの候補欄に表示する名前。
+     *
+     * 「鈴木,すずき」の場合、
+     *
+     * 鈴木
+     * すずき
+     *
+     * の両方が入る。
+     */
     let characters = [];
 
-    const fileInput = document.getElementById("fileInput");
-    const fileStatus = document.getElementById("fileStatus");
 
-    const callerInput = document.getElementById("caller");
-    const targetInput = document.getElementById("target");
+    /*
+     * nameAliases
+     *
+     * サイト上の名前 → 内部名
+     *
+     * 例：
+     *
+     * 鈴木 → 鈴木
+     * すずき → 鈴木
+     *
+     * というようにする。
+     */
+    let nameAliases = {};
+
+
+    // ========================================
+    // HTML要素
+    // ========================================
+
+    const fileInput =
+      document.getElementById("fileInput");
+
+    const fileStatus =
+      document.getElementById("fileStatus");
+
+    const callerInput =
+      document.getElementById("caller");
+
+    const targetInput =
+      document.getElementById("target");
 
     const callerSuggestions =
       document.getElementById("callerSuggestions");
@@ -353,262 +593,917 @@
     const resultDirection =
       document.getElementById("resultDirection");
 
-    const resultWord =
-      document.getElementById("resultWord");
+    const resultCalls =
+      document.getElementById("resultCalls");
 
 
-    // --------------------------------
+    // ========================================
+    // キャラクター名を分解
+    // ========================================
+
+    /*
+     * Excelに
+     *
+     * 鈴木,すずき
+     *
+     * と書かれていたら、
+     *
+     * ["鈴木", "すずき"]
+     *
+     * にする。
+     */
+
+    function splitNames(value) {
+
+      return String(value ?? "")
+        .split(",")
+        .map(name => name.trim())
+        .filter(name => name !== "");
+
+    }
+
+
+    // ========================================
     // Excel / CSV読み込み
-    // --------------------------------
+    // ========================================
 
-    fileInput.addEventListener("change", async function(event) {
-      const file = event.target.files[0];
+    fileInput.addEventListener(
+      "change",
+      async function(event) {
 
-      if (!file) return;
+        const file = event.target.files[0];
 
-      try {
-        fileStatus.textContent = "読み込み中……";
+        if (!file) return;
 
-        const data = await file.arrayBuffer();
+        try {
 
-        const workbook = XLSX.read(data, {
-          type: "array"
-        });
+          fileStatus.textContent =
+            "読み込み中……";
 
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
 
-        const rows = XLSX.utils.sheet_to_json(sheet, {
-          header: 1,
-          defval: ""
-        });
+          const data =
+            await file.arrayBuffer();
 
-        loadTable(rows);
 
-        fileStatus.textContent =
-          `${file.name} を読み込みました。キャラクター ${characters.length}人`;
+          const workbook =
+            XLSX.read(data, {
+              type: "array"
+            });
 
-        updateResult();
 
-      } catch (error) {
-        console.error(error);
+          const sheetName =
+            workbook.SheetNames[0];
 
-        fileStatus.textContent =
-          "ファイルを読み込めませんでした。Excelの形式を確認してください。";
 
-        callTable = {};
-        characters = [];
+          const sheet =
+            workbook.Sheets[sheetName];
+
+
+          const rows =
+            XLSX.utils.sheet_to_json(
+              sheet,
+              {
+                header: 1,
+                defval: ""
+              }
+            );
+
+
+          loadTable(rows);
+
+
+          fileStatus.textContent =
+            `${file.name} を読み込みました。キャラクター ${characters.length}個の名前を認識しました。`;
+
+
+          updateResult();
+
+
+        } catch (error) {
+
+          console.error(error);
+
+          fileStatus.textContent =
+            "ファイルを読み込めませんでした。Excelの形式を確認してください。";
+
+
+          callTable = {};
+
+          characters = [];
+
+          nameAliases = {};
+
+        }
+
       }
-    });
+    );
 
 
-    // --------------------------------
+    // ========================================
     // 表データを内部データに変換
-    // --------------------------------
+    // ========================================
 
     function loadTable(rows) {
 
       callTable = {};
+
       characters = [];
 
+      nameAliases = {};
+
+
       if (!rows || rows.length < 2) {
-        throw new Error("表のデータが不足しています。");
+
+        throw new Error(
+          "表のデータが不足しています。"
+        );
+
       }
+
 
       const header = rows[0];
 
-      for (let col = 1; col < header.length; col++) {
 
-        const name = String(header[col] ?? "").trim();
+      // ====================================
+      // 列側のキャラクターを登録
+      // ====================================
 
-        if (name !== "") {
-          characters.push(name);
+      const targetGroups = [];
+
+
+      for (
+        let col = 1;
+        col < header.length;
+        col++
+      ) {
+
+        const rawName =
+          String(
+            header[col] ?? ""
+          ).trim();
+
+
+        if (!rawName) continue;
+
+
+        /*
+         * 「鈴木,すずき」
+         *
+         * ↓
+         *
+         * ["鈴木", "すずき"]
+         */
+
+        const aliases =
+          splitNames(rawName);
+
+
+        if (aliases.length === 0) {
+          continue;
         }
+
+
+        /*
+         * 最初の名前を内部名として使う。
+         *
+         * 鈴木,すずき
+         *
+         * ↓
+         *
+         * 内部名 = 鈴木
+         */
+
+        const internalName =
+          aliases[0];
+
+
+        targetGroups.push({
+
+          col: col,
+
+          aliases: aliases,
+
+          internalName: internalName
+
+        });
+
+
+        /*
+         * 全ての別名をサイトの候補に登録
+         */
+
+        aliases.forEach(alias => {
+
+          if (!characters.includes(alias)) {
+
+            characters.push(alias);
+
+          }
+
+
+          /*
+           * どの別名も同じ内部キャラクターを指す
+           */
+
+          nameAliases[alias] =
+            internalName;
+
+        });
+
       }
 
-      for (let row = 1; row < rows.length; row++) {
 
-        const caller =
-          String(rows[row][0] ?? "").trim();
+      // ====================================
+      // 行側のキャラクターを登録
+      // ====================================
 
-        if (!caller) continue;
+      for (
+        let row = 1;
+        row < rows.length;
+        row++
+      ) {
 
-        if (!characters.includes(caller)) {
-          characters.push(caller);
+        const rawCaller =
+          String(
+            rows[row][0] ?? ""
+          ).trim();
+
+
+        if (!rawCaller) continue;
+
+
+        /*
+         * 例：
+         *
+         * 鈴木,すずき
+         *
+         * ↓
+         *
+         * ["鈴木", "すずき"]
+         */
+
+        const callerAliases =
+          splitNames(rawCaller);
+
+
+        if (callerAliases.length === 0) {
+          continue;
         }
 
-        if (!callTable[caller]) {
-          callTable[caller] = {};
+
+        /*
+         * 最初の名前を内部名にする
+         */
+
+        const internalCaller =
+          callerAliases[0];
+
+
+        /*
+         * 全ての別名を候補に追加
+         */
+
+        callerAliases.forEach(alias => {
+
+          if (!characters.includes(alias)) {
+
+            characters.push(alias);
+
+          }
+
+
+          nameAliases[alias] =
+            internalCaller;
+
+        });
+
+
+        /*
+         * 呼ぶ側の内部データを作成
+         */
+
+        if (!callTable[internalCaller]) {
+
+          callTable[internalCaller] = {};
+
         }
 
-        for (let col = 1; col < header.length; col++) {
 
-          const target =
-            String(header[col] ?? "").trim();
+        // ==================================
+        // 呼称を登録
+        // ==================================
 
-          if (!target) continue;
+        targetGroups.forEach(group => {
 
-          const value =
-            String(rows[row][col] ?? "").trim();
+          const rawValue =
+            String(
+              rows[row][group.col] ?? ""
+            ).trim();
 
-          callTable[caller][target] = value;
-        }
+
+          /*
+           * Excelの呼称セルを
+           * カンマで分割する。
+           *
+           * 例：
+           *
+           * 鈴木,お前（怒ってる時）
+           *
+           * ↓
+           *
+           * 基本：
+           * 鈴木
+           *
+           * 例外：
+           * お前（怒ってる時）
+           */
+
+          const callNames =
+            splitNames(rawValue);
+
+
+          let basic = "";
+
+          let exception = "";
+
+
+          if (callNames.length >= 1) {
+
+            basic = callNames[0];
+
+          }
+
+
+          if (callNames.length >= 2) {
+
+            /*
+             * 2個目以降は例外として扱う。
+             *
+             * 現在は2個目だけを表示する。
+             */
+
+            exception =
+              callNames.slice(1).join(", ");
+
+          }
+
+
+          /*
+           * 内部キャラクター名で保存
+           */
+
+          const internalTarget =
+            group.internalName;
+
+
+          callTable[internalCaller][internalTarget] = {
+
+            basic: basic,
+
+            exception: exception
+
+          };
+
+        });
+
       }
 
-      // 重複を除去
-      characters = [...new Set(characters)];
+
+      /*
+       * 重複を除去
+       */
+
+      characters =
+        [...new Set(characters)];
+
     }
 
 
-    // --------------------------------
+    // ========================================
     // 候補表示
-    // --------------------------------
+    // ========================================
 
-    function showSuggestions(input, box) {
+    function showSuggestions(
+      input,
+      box
+    ) {
 
-      const keyword = input.value.trim().toLowerCase();
+      const keyword =
+        input.value
+          .trim()
+          .toLowerCase();
+
 
       box.innerHTML = "";
 
-      if (!keyword || characters.length === 0) {
+
+      if (
+        !keyword ||
+        characters.length === 0
+      ) {
+
         box.hidden = true;
+
         return;
+
       }
 
-      const matches = characters
-        .filter(name =>
-          name.toLowerCase().includes(keyword)
-        )
-        .slice(0, 20);
+
+      /*
+       * 部分一致検索
+       */
+
+      const matches =
+        characters
+          .filter(name =>
+            name
+              .toLowerCase()
+              .includes(keyword)
+          )
+          .slice(0, 20);
+
 
       if (matches.length === 0) {
+
         box.hidden = true;
+
         return;
+
       }
+
 
       matches.forEach(name => {
 
-        const item = document.createElement("div");
+        const item =
+          document.createElement("div");
 
-        item.className = "suggestion";
-        item.textContent = name;
 
-        item.addEventListener("click", () => {
+        item.className =
+          "suggestion";
 
-          input.value = name;
-          box.hidden = true;
 
-          updateResult();
-        });
+        item.textContent =
+          name;
+
+
+        item.addEventListener(
+          "click",
+          () => {
+
+            /*
+             * ユーザーが選んだ名前を
+             * そのまま入力欄に入れる
+             */
+
+            input.value = name;
+
+
+            box.hidden = true;
+
+
+            updateResult();
+
+          }
+        );
+
 
         box.appendChild(item);
+
       });
 
+
       box.hidden = false;
+
     }
 
 
-    callerInput.addEventListener("input", () => {
-      showSuggestions(callerInput, callerSuggestions);
-      updateResult();
-    });
+    // ========================================
+    // 入力イベント
+    // ========================================
 
-    targetInput.addEventListener("input", () => {
-      showSuggestions(targetInput, targetSuggestions);
-      updateResult();
-    });
+    callerInput.addEventListener(
+      "input",
+      () => {
+
+        showSuggestions(
+          callerInput,
+          callerSuggestions
+        );
 
 
-    // --------------------------------
+        updateResult();
+
+      }
+    );
+
+
+    targetInput.addEventListener(
+      "input",
+      () => {
+
+        showSuggestions(
+          targetInput,
+          targetSuggestions
+        );
+
+
+        updateResult();
+
+      }
+    );
+
+
+    // ========================================
     // 入れ替え
-    // --------------------------------
+    // ========================================
 
-    swapButton.addEventListener("click", () => {
+    swapButton.addEventListener(
+      "click",
+      () => {
 
-      const temp = callerInput.value;
-
-      callerInput.value = targetInput.value;
-      targetInput.value = temp;
-
-      callerSuggestions.hidden = true;
-      targetSuggestions.hidden = true;
-
-      updateResult();
-    });
+        const temp =
+          callerInput.value;
 
 
-    // --------------------------------
-    // 呼称検索
-    // --------------------------------
+        callerInput.value =
+          targetInput.value;
+
+
+        targetInput.value =
+          temp;
+
+
+        callerSuggestions.hidden =
+          true;
+
+
+        targetSuggestions.hidden =
+          true;
+
+
+        updateResult();
+
+      }
+    );
+
+
+    // ========================================
+    // 結果表示
+    // ========================================
 
     function updateResult() {
 
-      const caller = callerInput.value.trim();
-      const target = targetInput.value.trim();
+      /*
+       * ユーザーが入力した名前を取得
+       */
+
+      const caller =
+        callerInput.value.trim();
+
+
+      const target =
+        targetInput.value.trim();
+
+
+      // ====================================
+      // まだ入力されていない場合
+      // ====================================
 
       if (!caller || !target) {
 
         resultDirection.textContent =
           "呼ぶ側と呼ばれる側を入力してください。";
 
-        resultWord.innerHTML =
-          '<span class="result-placeholder">' +
-          '呼び方がここに表示されます' +
-          '</span>';
+
+        resultCalls.innerHTML = `
+
+          <div class="result-call">
+
+            <div class="result-call-label">
+              基本
+            </div>
+
+            <div class="result-call-word">
+
+              <span class="result-placeholder">
+                呼び方がここに表示されます
+              </span>
+
+            </div>
+
+          </div>
+
+        `;
+
 
         return;
+
       }
+
+
+      // ====================================
+      // 画面上の表示
+      // ====================================
+
+      /*
+       * ここでは内部名ではなく、
+       * ユーザーが実際に入力した名前を使う。
+       *
+       * 「すずき」と入力したら
+       *
+       * すずき → 山田
+       *
+       * と表示される。
+       */
 
       resultDirection.textContent =
         `${caller} → ${target}`;
 
-      if (!callTable[caller]) {
 
-        resultWord.innerHTML =
-          '<span class="result-placeholder">' +
-          '呼ぶ側が見つかりません' +
-          '</span>';
+      // ====================================
+      // 内部名に変換
+      // ====================================
+
+      const internalCaller =
+        nameAliases[caller];
+
+
+      const internalTarget =
+        nameAliases[target];
+
+
+      // ====================================
+      // 呼ぶ側が存在しない
+      // ====================================
+
+      if (!internalCaller) {
+
+        resultCalls.innerHTML = `
+
+          <div class="result-call">
+
+            <div class="result-call-label">
+              基本
+            </div>
+
+            <div class="result-call-word">
+
+              <span class="result-placeholder">
+                呼ぶ側が見つかりません
+              </span>
+
+            </div>
+
+          </div>
+
+        `;
+
 
         return;
+
       }
 
-      const value = callTable[caller][target];
 
-      if (value === undefined || value === "") {
+      // ====================================
+      // 呼ばれる側が存在しない
+      // ====================================
 
-        resultWord.innerHTML =
-          '<span class="result-placeholder">' +
-          '未登録' +
-          '</span>';
+      if (!internalTarget) {
+
+        resultCalls.innerHTML = `
+
+          <div class="result-call">
+
+            <div class="result-call-label">
+              基本
+            </div>
+
+            <div class="result-call-word">
+
+              <span class="result-placeholder">
+                呼ばれる側が見つかりません
+              </span>
+
+            </div>
+
+          </div>
+
+        `;
+
 
         return;
+
       }
 
-      resultWord.textContent = value;
+
+      // ====================================
+      // 呼称を取得
+      // ====================================
+
+      const callData =
+        callTable[internalCaller]?.[
+          internalTarget
+        ];
+
+
+      // ====================================
+      // 未登録
+      // ====================================
+
+      if (!callData) {
+
+        resultCalls.innerHTML = `
+
+          <div class="result-call">
+
+            <div class="result-call-label">
+              基本
+            </div>
+
+            <div class="result-call-word">
+
+              <span class="result-placeholder">
+                未登録
+              </span>
+
+            </div>
+
+          </div>
+
+        `;
+
+
+        return;
+
+      }
+
+
+      // ====================================
+      // 基本の呼び方
+      // ====================================
+
+      const basic =
+        callData.basic || "";
+
+
+      // ====================================
+      // 例外の呼び方
+      // ====================================
+
+      const exception =
+        callData.exception || "";
+
+
+      // ====================================
+      // 表示HTML作成
+      // ====================================
+
+      let html = "";
+
+
+      /*
+       * 基本の呼び方
+       */
+
+      if (basic !== "") {
+
+        html += `
+
+          <div class="result-call">
+
+            <div class="result-call-label">
+              基本
+            </div>
+
+            <div class="result-call-word">
+              ${escapeHtml(basic)}
+            </div>
+
+          </div>
+
+        `;
+
+      }
+
+
+      /*
+       * 例外の呼び方
+       */
+
+      if (exception !== "") {
+
+        html += `
+
+          <div class="result-call">
+
+            <div class="result-call-label">
+              例外
+            </div>
+
+            <div class="result-call-word">
+              ${escapeHtml(exception)}
+            </div>
+
+          </div>
+
+        `;
+
+      }
+
+
+      /*
+       * 何も入っていなかった場合
+       */
+
+      if (html === "") {
+
+        html = `
+
+          <div class="result-call">
+
+            <div class="result-call-label">
+              基本
+            </div>
+
+            <div class="result-call-word">
+
+              <span class="result-placeholder">
+                未登録
+              </span>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+
+
+      resultCalls.innerHTML =
+        html;
+
     }
 
 
-    // --------------------------------
+    // ========================================
+    // HTMLエスケープ
+    // ========================================
+
+    /*
+     * Excelに
+     *
+     * <〇〇>
+     *
+     * などが入っていても、
+     * HTMLとして解釈されないようにする。
+     */
+
+    function escapeHtml(value) {
+
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+
+    // ========================================
     // 画面外をタップしたら候補を閉じる
-    // --------------------------------
+    // ========================================
 
-    document.addEventListener("click", function(event) {
+    document.addEventListener(
+      "click",
+      function(event) {
 
-      if (
-        !callerInput.contains(event.target) &&
-        !callerSuggestions.contains(event.target)
-      ) {
-        callerSuggestions.hidden = true;
+        if (
+          !callerInput.contains(event.target) &&
+          !callerSuggestions.contains(event.target)
+        ) {
+
+          callerSuggestions.hidden =
+            true;
+
+        }
+
+
+        if (
+          !targetInput.contains(event.target) &&
+          !targetSuggestions.contains(event.target)
+        ) {
+
+          targetSuggestions.hidden =
+            true;
+
+        }
+
       }
-
-      if (
-        !targetInput.contains(event.target) &&
-        !targetSuggestions.contains(event.target)
-      ) {
-        targetSuggestions.hidden = true;
-      }
-    });
+    );
 
   </script>
+
 </body>
 </html>
