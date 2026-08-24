@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>呼称検索</title>
+  <title>呼称検索・編集</title>
 
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 
@@ -50,21 +50,38 @@
       border-radius: 16px;
       padding: 20px;
       margin-bottom: 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
     }
 
     .file-area {
       text-align: center;
     }
 
-    .file-button {
+    .file-button,
+    .save-button {
       display: inline-block;
       padding: 12px 18px;
-      background: #007aff;
-      color: white;
+      border: none;
       border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
+    }
+
+    .file-button {
+      background: #007aff;
+      color: white;
+    }
+
+    .save-button {
+      width: 100%;
+      background: #34a853;
+      color: white;
+      font-size: 16px;
+    }
+
+    .save-button:disabled {
+      background: #bbb;
+      cursor: not-allowed;
     }
 
     #fileInput {
@@ -102,7 +119,7 @@
 
     input[type="text"]:focus {
       border-color: #007aff;
-      box-shadow: 0 0 0 3px rgba(0,122,255,0.12);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12);
     }
 
     .suggestions {
@@ -115,7 +132,7 @@
       border: 1px solid #ddd;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
     }
 
     .suggestion {
@@ -147,28 +164,19 @@
       cursor: pointer;
     }
 
-    .swap-button:active {
-      background: #ddd;
-      transform: scale(0.96);
-    }
-
     .result {
-      padding: 24px 16px;
+      padding: 20px 16px;
       background: #f8f8fa;
       border-radius: 12px;
     }
 
     .result-direction {
+      text-align: center;
       color: #666;
       font-size: 14px;
       margin-bottom: 16px;
-      text-align: center;
       word-break: break-word;
     }
-
-    /*
-     * 呼び方表示
-     */
 
     .result-call {
       background: white;
@@ -202,10 +210,17 @@
       font-weight: normal;
     }
 
-    .error {
-      color: #d00;
-      text-align: center;
+    .edit-label {
+      display: block;
       font-size: 14px;
+      font-weight: 700;
+      margin: 18px 0 7px;
+    }
+
+    .edit-note {
+      font-size: 12px;
+      color: #777;
+      margin: 0 0 8px;
     }
 
     .help {
@@ -218,33 +233,7 @@
       color: #333;
     }
 
-    .excel-example {
-      display: block;
-      width: 100%;
-      height: auto;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-    }
-
-    /*
-     * Excel記入例
-     */
-
-    .example-box {
-      background: #f8f8fa;
-      border-radius: 10px;
-      padding: 12px 14px;
-      margin-top: 10px;
-      overflow-x: auto;
-    }
-
-    .example-box code {
-      font-family: monospace;
-      color: #333;
-    }
-
     @media (max-width: 480px) {
-
       .container {
         padding: 18px 12px 32px;
       }
@@ -268,10 +257,10 @@
 
   <div class="container">
 
-    <h1>呼称検索</h1>
+    <h1>呼称検索・編集</h1>
 
     <p class="description">
-      Excelの呼称表を読み込んで、キャラクター同士の呼び方を検索します。
+      Excelの呼称表を読み込み、サイト上で呼称を検索・編集できます。
     </p>
 
 
@@ -303,11 +292,10 @@
 
 
     <!-- ============================= -->
-    <!-- 検索 -->
+    <!-- 検索・編集 -->
     <!-- ============================= -->
 
     <div class="card">
-
 
       <!-- 呼ぶ側 -->
 
@@ -373,9 +361,7 @@
       </div>
 
 
-      <!-- ============================= -->
-      <!-- 結果 -->
-      <!-- ============================= -->
+      <!-- 現在の呼称 -->
 
       <div class="result">
 
@@ -386,7 +372,6 @@
           呼称表を読み込んでください
         </div>
 
-
         <div id="resultCalls">
 
           <div class="result-call">
@@ -396,9 +381,11 @@
             </div>
 
             <div class="result-call-word">
+
               <span class="result-placeholder">
                 呼び方がここに表示されます
               </span>
+
             </div>
 
           </div>
@@ -406,6 +393,74 @@
         </div>
 
       </div>
+
+
+      <!-- ============================= -->
+      <!-- 呼称編集 -->
+      <!-- ============================= -->
+
+      <label
+        class="edit-label"
+        for="basicInput"
+      >
+        基本の呼び方
+      </label>
+
+      <input
+        id="basicInput"
+        type="text"
+        placeholder="例：お前"
+      >
+
+
+      <label
+        class="edit-label"
+        for="exceptionInput"
+      >
+        例外の呼び方
+      </label>
+
+      <p class="edit-note">
+        不要なら空欄でOK。複数ある場合は「,」で区切ってください。
+      </p>
+
+      <input
+        id="exceptionInput"
+        type="text"
+        placeholder="例：君（改まった場面）"
+      >
+
+
+      <br>
+      <br>
+
+
+      <button
+        id="saveCellButton"
+        class="save-button"
+        type="button"
+        disabled
+      >
+        この呼称をExcelに反映
+      </button>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- ダウンロード -->
+    <!-- ============================= -->
+
+    <div class="card">
+
+      <button
+        id="downloadButton"
+        class="save-button"
+        type="button"
+        disabled
+      >
+        完成版Excelをダウンロード
+      </button>
 
     </div>
 
@@ -416,106 +471,41 @@
 
     <div class="card help">
 
-      <strong>Excelの作り方</strong>
+      <strong>使い方</strong>
 
-      <br><br>
+      <br>
+      <br>
 
-      1行目（横軸）：呼ばれる側のキャラクター名<br>
+      1. 元になるExcelを読み込む。<br>
 
-      1列目（縦軸）：呼ぶ側のキャラクター名<br>
+      2. 「呼ぶ側」と「呼ばれる側」を選ぶ。<br>
 
-      交差するセル：その呼び方
+      3. 「基本の呼び方」「例外の呼び方」を入力する。<br>
 
-      <br><br>
+      4. 「この呼称をExcelに反映」を押す。<br>
 
-
-      <strong>キャラクター名に表記揺れがある場合</strong>
-
-      <br><br>
-
-      Excel側で、同じキャラクターを複数の名前で登録したい場合は、
-      キャラクター名をコンマ（,）で区切ってください。
-
-      <div class="example-box">
-        <code>鈴木,すずき</code>
-      </div>
+      5. 必要な箇所を編集したら「完成版Excelをダウンロード」を押す。<br>
 
       <br>
 
-      この場合、サイトでは
+      <strong>Excelの形式</strong>
 
       <br>
-
-      「鈴木」
-
       <br>
 
-      「すずき」
+      1行目（横軸）：呼ばれる側<br>
+
+      1列目（縦軸）：呼ぶ側<br>
+
+      交差セル：その呼び方
 
       <br>
-
-      のどちらでも検索できます。
-
-      <br><br>
-
-      サイト上ではキャラ名は「鈴木,すずき」とは表示されず、
-      ユーザーが入力・選択した名前（「鈴木」「すずき」のどちらか）が表示されます。
-
-
-      <br><br>
-
-
-      <strong>呼び方が複数ある場合</strong>
-
-      <br><br>
-
-      基本の呼び方と例外の呼び方を
-      コンマ（,）で区切ってください。
-
-      <div class="example-box">
-        <code>鈴木くん,お前（怒ってる時）</code>
-      </div>
-
       <br>
 
-      この場合、サイトでは、
-
-      <br><br>
-
-      <strong>基本</strong><br>
-      鈴木くん
-
-      <br><br>
-
-      <strong>例外</strong><br>
-      お前（怒ってる時）
-
-      <br><br>
-
-      のように表示されます。
-
-
-      <br><br>
-
-
-      <strong>お手本</strong>
-
-      <br><br>
-
-      <img
-        src="./IMG_0784.jpeg"
-        alt="Excelで作成する呼称表の例"
-        class="excel-example"
-      >
-
-      <br><br>
-
-      例えば「Aさん」が「Bさん」を呼ぶ場合は、
-      「Aさん」の行と「Bさん」の列が交差するセルに
-      呼び方を入力します。
+      キャラクター名に表記揺れがある場合は、
+      「鈴木,すずき」のようにカンマ区切りで登録できます。
 
     </div>
-
 
   </div>
 
@@ -526,43 +516,17 @@
     // 内部データ
     // ========================================
 
-    /*
-     * callTable
-     *
-     * Excel上のキャラクターを
-     * 内部的な名前で管理する。
-     */
-    let callTable = {};
+    let workbook = null;
 
+    let sheet = null;
 
-    /*
-     * characters
-     *
-     * サイトの候補欄に表示する名前。
-     *
-     * 「鈴木,すずき」の場合、
-     *
-     * 鈴木
-     * すずき
-     *
-     * の両方が入る。
-     */
+    let rows = [];
+
     let characters = [];
 
-
-    /*
-     * nameAliases
-     *
-     * サイト上の名前 → 内部名
-     *
-     * 例：
-     *
-     * 鈴木 → 鈴木
-     * すずき → 鈴木
-     *
-     * というようにする。
-     */
     let nameAliases = {};
+
+    let tableInfo = {};
 
 
     // ========================================
@@ -596,22 +560,22 @@
     const resultCalls =
       document.getElementById("resultCalls");
 
+    const basicInput =
+      document.getElementById("basicInput");
+
+    const exceptionInput =
+      document.getElementById("exceptionInput");
+
+    const saveCellButton =
+      document.getElementById("saveCellButton");
+
+    const downloadButton =
+      document.getElementById("downloadButton");
+
 
     // ========================================
-    // キャラクター名を分解
+    // 名前をカンマで分解
     // ========================================
-
-    /*
-     * Excelに
-     *
-     * 鈴木,すずき
-     *
-     * と書かれていたら、
-     *
-     * ["鈴木", "すずき"]
-     *
-     * にする。
-     */
 
     function splitNames(value) {
 
@@ -624,16 +588,34 @@
 
 
     // ========================================
-    // Excel / CSV読み込み
+    // HTMLエスケープ
+    // ========================================
+
+    function escapeHtml(value) {
+
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+
+    // ========================================
+    // Excel読み込み
     // ========================================
 
     fileInput.addEventListener(
       "change",
       async function(event) {
 
-        const file = event.target.files[0];
+        const file =
+          event.target.files[0];
 
         if (!file) return;
+
 
         try {
 
@@ -645,7 +627,7 @@
             await file.arrayBuffer();
 
 
-          const workbook =
+          workbook =
             XLSX.read(data, {
               type: "array"
             });
@@ -655,11 +637,11 @@
             workbook.SheetNames[0];
 
 
-          const sheet =
+          sheet =
             workbook.Sheets[sheetName];
 
 
-          const rows =
+          rows =
             XLSX.utils.sheet_to_json(
               sheet,
               {
@@ -676,6 +658,9 @@
             `${file.name} を読み込みました。キャラクター ${characters.length}個の名前を認識しました。`;
 
 
+          downloadButton.disabled = false;
+
+
           updateResult();
 
 
@@ -687,11 +672,21 @@
             "ファイルを読み込めませんでした。Excelの形式を確認してください。";
 
 
-          callTable = {};
+          workbook = null;
+
+          sheet = null;
+
+          rows = [];
 
           characters = [];
 
           nameAliases = {};
+
+          tableInfo = {};
+
+          downloadButton.disabled = true;
+
+          saveCellButton.disabled = true;
 
         }
 
@@ -700,19 +695,19 @@
 
 
     // ========================================
-    // 表データを内部データに変換
+    // Excel表を内部データに変換
     // ========================================
 
-    function loadTable(rows) {
-
-      callTable = {};
+    function loadTable(data) {
 
       characters = [];
 
       nameAliases = {};
 
+      tableInfo = {};
 
-      if (!rows || rows.length < 2) {
+
+      if (!data || data.length < 2) {
 
         throw new Error(
           "表のデータが不足しています。"
@@ -721,11 +716,12 @@
       }
 
 
-      const header = rows[0];
+      const header =
+        data[0];
 
 
       // ====================================
-      // 列側のキャラクターを登録
+      // 横軸：呼ばれる側
       // ====================================
 
       const targetGroups = [];
@@ -746,32 +742,12 @@
         if (!rawName) continue;
 
 
-        /*
-         * 「鈴木,すずき」
-         *
-         * ↓
-         *
-         * ["鈴木", "すずき"]
-         */
-
         const aliases =
           splitNames(rawName);
 
 
-        if (aliases.length === 0) {
-          continue;
-        }
+        if (!aliases.length) continue;
 
-
-        /*
-         * 最初の名前を内部名として使う。
-         *
-         * 鈴木,すずき
-         *
-         * ↓
-         *
-         * 内部名 = 鈴木
-         */
 
         const internalName =
           aliases[0];
@@ -788,10 +764,6 @@
         });
 
 
-        /*
-         * 全ての別名をサイトの候補に登録
-         */
-
         aliases.forEach(alias => {
 
           if (!characters.includes(alias)) {
@@ -800,10 +772,6 @@
 
           }
 
-
-          /*
-           * どの別名も同じ内部キャラクターを指す
-           */
 
           nameAliases[alias] =
             internalName;
@@ -814,56 +782,36 @@
 
 
       // ====================================
-      // 行側のキャラクターを登録
+      // 縦軸：呼ぶ側
       // ====================================
 
       for (
         let row = 1;
-        row < rows.length;
+        row < data.length;
         row++
       ) {
 
         const rawCaller =
           String(
-            rows[row][0] ?? ""
+            data[row]?.[0] ?? ""
           ).trim();
 
 
         if (!rawCaller) continue;
 
 
-        /*
-         * 例：
-         *
-         * 鈴木,すずき
-         *
-         * ↓
-         *
-         * ["鈴木", "すずき"]
-         */
-
-        const callerAliases =
+        const aliases =
           splitNames(rawCaller);
 
 
-        if (callerAliases.length === 0) {
-          continue;
-        }
+        if (!aliases.length) continue;
 
-
-        /*
-         * 最初の名前を内部名にする
-         */
 
         const internalCaller =
-          callerAliases[0];
+          aliases[0];
 
 
-        /*
-         * 全ての別名を候補に追加
-         */
-
-        callerAliases.forEach(alias => {
+        aliases.forEach(alias => {
 
           if (!characters.includes(alias)) {
 
@@ -878,100 +826,38 @@
         });
 
 
-        /*
-         * 呼ぶ側の内部データを作成
-         */
+        tableInfo[internalCaller] = {
 
-        if (!callTable[internalCaller]) {
+          row: row,
 
-          callTable[internalCaller] = {};
+          aliases: aliases,
 
-        }
+          targets: {}
+
+        };
 
 
         // ==================================
-        // 呼称を登録
+        // 各呼ばれる側との交差セルを登録
         // ==================================
 
         targetGroups.forEach(group => {
 
-          const rawValue =
-            String(
-              rows[row][group.col] ?? ""
-            ).trim();
+          tableInfo[internalCaller]
+            .targets[group.internalName] = {
 
+              row: row,
 
-          /*
-           * Excelの呼称セルを
-           * カンマで分割する。
-           *
-           * 例：
-           *
-           * 鈴木,お前（怒ってる時）
-           *
-           * ↓
-           *
-           * 基本：
-           * 鈴木
-           *
-           * 例外：
-           * お前（怒ってる時）
-           */
+              col: group.col,
 
-          const callNames =
-            splitNames(rawValue);
+              aliases: group.aliases
 
-
-          let basic = "";
-
-          let exception = "";
-
-
-          if (callNames.length >= 1) {
-
-            basic = callNames[0];
-
-          }
-
-
-          if (callNames.length >= 2) {
-
-            /*
-             * 2個目以降は例外として扱う。
-             *
-             * 現在は2個目だけを表示する。
-             */
-
-            exception =
-              callNames.slice(1).join(", ");
-
-          }
-
-
-          /*
-           * 内部キャラクター名で保存
-           */
-
-          const internalTarget =
-            group.internalName;
-
-
-          callTable[internalCaller][internalTarget] = {
-
-            basic: basic,
-
-            exception: exception
-
-          };
+            };
 
         });
 
       }
 
-
-      /*
-       * 重複を除去
-       */
 
       characters =
         [...new Set(characters)];
@@ -980,7 +866,108 @@
 
 
     // ========================================
-    // 候補表示
+    // 入力されたキャラクターを内部名に変換
+    // ========================================
+
+    function findInputCharacter(input) {
+
+      const typed =
+        input.trim();
+
+
+      return nameAliases[typed] || null;
+
+    }
+
+
+    // ========================================
+    // 現在選択中の交差セル情報を取得
+    // ========================================
+
+    function getCellData() {
+
+      const caller =
+        callerInput.value.trim();
+
+
+      const target =
+        targetInput.value.trim();
+
+
+      if (!caller || !target) {
+
+        return null;
+
+      }
+
+
+      const internalCaller =
+        findInputCharacter(caller);
+
+
+      const internalTarget =
+        findInputCharacter(target);
+
+
+      if (
+        !internalCaller ||
+        !internalTarget
+      ) {
+
+        return null;
+
+      }
+
+
+      const info =
+        tableInfo[internalCaller]
+          ?.targets?.[internalTarget];
+
+
+      if (!info) {
+
+        return null;
+
+      }
+
+
+      const raw =
+        String(
+          rows[info.row]?.[info.col] ?? ""
+        ).trim();
+
+
+      const values =
+        splitNames(raw);
+
+
+      return {
+
+        internalCaller:
+          internalCaller,
+
+        internalTarget:
+          internalTarget,
+
+        row:
+          info.row,
+
+        col:
+          info.col,
+
+        basic:
+          values[0] || "",
+
+        exception:
+          values.slice(1).join(", ")
+
+      };
+
+    }
+
+
+    // ========================================
+    // キャラクター候補表示
     // ========================================
 
     function showSuggestions(
@@ -999,7 +986,7 @@
 
       if (
         !keyword ||
-        characters.length === 0
+        !characters.length
       ) {
 
         box.hidden = true;
@@ -1008,10 +995,6 @@
 
       }
 
-
-      /*
-       * 部分一致検索
-       */
 
       const matches =
         characters
@@ -1023,7 +1006,7 @@
           .slice(0, 20);
 
 
-      if (matches.length === 0) {
+      if (!matches.length) {
 
         box.hidden = true;
 
@@ -1050,15 +1033,12 @@
           "click",
           () => {
 
-            /*
-             * ユーザーが選んだ名前を
-             * そのまま入力欄に入れる
-             */
-
-            input.value = name;
+            input.value =
+              name;
 
 
-            box.hidden = true;
+            box.hidden =
+              true;
 
 
             updateResult();
@@ -1114,7 +1094,7 @@
 
 
     // ========================================
-    // 入れ替え
+    // 呼ぶ側・呼ばれる側の入れ替え
     // ========================================
 
     swapButton.addEventListener(
@@ -1153,10 +1133,6 @@
 
     function updateResult() {
 
-      /*
-       * ユーザーが入力した名前を取得
-       */
-
       const caller =
         callerInput.value.trim();
 
@@ -1165,8 +1141,15 @@
         targetInput.value.trim();
 
 
+      basicInput.value = "";
+
+      exceptionInput.value = "";
+
+      saveCellButton.disabled = true;
+
+
       // ====================================
-      // まだ入力されていない場合
+      // 未入力
       // ====================================
 
       if (!caller || !target) {
@@ -1202,41 +1185,22 @@
 
 
       // ====================================
-      // 画面上の表示
+      // 表示
       // ====================================
-
-      /*
-       * ここでは内部名ではなく、
-       * ユーザーが実際に入力した名前を使う。
-       *
-       * 「すずき」と入力したら
-       *
-       * すずき → 山田
-       *
-       * と表示される。
-       */
 
       resultDirection.textContent =
         `${caller} → ${target}`;
 
 
       // ====================================
-      // 内部名に変換
+      // 交差セル取得
       // ====================================
 
-      const internalCaller =
-        nameAliases[caller];
+      const data =
+        getCellData();
 
 
-      const internalTarget =
-        nameAliases[target];
-
-
-      // ====================================
-      // 呼ぶ側が存在しない
-      // ====================================
-
-      if (!internalCaller) {
+      if (!data) {
 
         resultCalls.innerHTML = `
 
@@ -1249,7 +1213,7 @@
             <div class="result-call-word">
 
               <span class="result-placeholder">
-                呼ぶ側が見つかりません
+                該当する組み合わせが見つかりません
               </span>
 
             </div>
@@ -1265,107 +1229,29 @@
 
 
       // ====================================
-      // 呼ばれる側が存在しない
+      // 現在の呼称を編集欄へ
       // ====================================
 
-      if (!internalTarget) {
-
-        resultCalls.innerHTML = `
-
-          <div class="result-call">
-
-            <div class="result-call-label">
-              基本
-            </div>
-
-            <div class="result-call-word">
-
-              <span class="result-placeholder">
-                呼ばれる側が見つかりません
-              </span>
-
-            </div>
-
-          </div>
-
-        `;
+      basicInput.value =
+        data.basic;
 
 
-        return;
+      exceptionInput.value =
+        data.exception;
 
-      }
+
+      saveCellButton.disabled =
+        false;
 
 
       // ====================================
-      // 呼称を取得
-      // ====================================
-
-      const callData =
-        callTable[internalCaller]?.[
-          internalTarget
-        ];
-
-
-      // ====================================
-      // 未登録
-      // ====================================
-
-      if (!callData) {
-
-        resultCalls.innerHTML = `
-
-          <div class="result-call">
-
-            <div class="result-call-label">
-              基本
-            </div>
-
-            <div class="result-call-word">
-
-              <span class="result-placeholder">
-                未登録
-              </span>
-
-            </div>
-
-          </div>
-
-        `;
-
-
-        return;
-
-      }
-
-
-      // ====================================
-      // 基本の呼び方
-      // ====================================
-
-      const basic =
-        callData.basic || "";
-
-
-      // ====================================
-      // 例外の呼び方
-      // ====================================
-
-      const exception =
-        callData.exception || "";
-
-
-      // ====================================
-      // 表示HTML作成
+      // 現在の呼称を表示
       // ====================================
 
       let html = "";
 
 
-      /*
-       * 基本の呼び方
-       */
-
-      if (basic !== "") {
+      if (data.basic !== "") {
 
         html += `
 
@@ -1376,7 +1262,7 @@
             </div>
 
             <div class="result-call-word">
-              ${escapeHtml(basic)}
+              ${escapeHtml(data.basic)}
             </div>
 
           </div>
@@ -1386,11 +1272,7 @@
       }
 
 
-      /*
-       * 例外の呼び方
-       */
-
-      if (exception !== "") {
+      if (data.exception !== "") {
 
         html += `
 
@@ -1401,7 +1283,7 @@
             </div>
 
             <div class="result-call-word">
-              ${escapeHtml(exception)}
+              ${escapeHtml(data.exception)}
             </div>
 
           </div>
@@ -1410,10 +1292,6 @@
 
       }
 
-
-      /*
-       * 何も入っていなかった場合
-       */
 
       if (html === "") {
 
@@ -1447,32 +1325,161 @@
 
 
     // ========================================
-    // HTMLエスケープ
+    // 呼称をExcelデータへ反映
     // ========================================
 
-    /*
-     * Excelに
-     *
-     * <〇〇>
-     *
-     * などが入っていても、
-     * HTMLとして解釈されないようにする。
-     */
+    saveCellButton.addEventListener(
+      "click",
+      () => {
 
-    function escapeHtml(value) {
+        const data =
+          getCellData();
 
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
 
-    }
+        if (!data) {
+
+          alert(
+            "呼ぶ側と呼ばれる側を正しく選択してください。"
+          );
+
+          return;
+
+        }
+
+
+        const basic =
+          basicInput.value.trim();
+
+
+        const exception =
+          exceptionInput.value.trim();
+
+
+        // ====================================
+        // Excelのセルに入れる文字列を作成
+        // ====================================
+
+        const value =
+          [basic, exception]
+            .filter(Boolean)
+            .join(",");
+
+
+        // ====================================
+        // 内部の行データを更新
+        // ====================================
+
+        if (!rows[data.row]) {
+
+          rows[data.row] = [];
+
+        }
+
+
+        rows[data.row][data.col] =
+          value;
+
+
+        // ====================================
+        // SheetJSのシートも更新
+        // ====================================
+
+        const cellAddress =
+          XLSX.utils.encode_cell({
+
+            r: data.row,
+
+            c: data.col
+
+          });
+
+
+        sheet[cellAddress] = {
+
+          t: "s",
+
+          v: value
+
+        };
+
+
+        // ====================================
+        // 画面を更新
+        // ====================================
+
+        updateResult();
+
+
+        fileStatus.textContent =
+          `「${callerInput.value.trim()} → ${targetInput.value.trim()}」の呼称をExcelデータに反映しました。`;
+
+      }
+    );
 
 
     // ========================================
-    // 画面外をタップしたら候補を閉じる
+    // 完成版Excelをダウンロード
+    // ========================================
+
+    downloadButton.addEventListener(
+      "click",
+      () => {
+
+        if (!workbook || !sheet) {
+
+          alert(
+            "先にExcelを読み込んでください。"
+          );
+
+          return;
+
+        }
+
+
+        // ====================================
+        // 現在のrowsからシートを再生成
+        // ====================================
+
+        const newSheet =
+          XLSX.utils.aoa_to_sheet(rows);
+
+
+        workbook.Sheets[
+          workbook.SheetNames[0]
+        ] = newSheet;
+
+
+        // ====================================
+        // 元ファイル名を取得
+        // ====================================
+
+        const original =
+          fileInput.files[0]?.name ||
+          "呼称表.xlsx";
+
+
+        const base =
+          original.replace(
+            /\.[^.]+$/,
+            ""
+          );
+
+
+        // ====================================
+        // Excelとして保存
+        // ====================================
+
+        XLSX.writeFile(
+          workbook,
+          `${base}_完成版.xlsx`
+        );
+
+      }
+    );
+
+
+    // ========================================
+    // 画面外クリックで候補を閉じる
     // ========================================
 
     document.addEventListener(
