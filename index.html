@@ -330,7 +330,16 @@ function setCell(row, col, value) {
 function normalizeName(value) {
   return String(value ?? "").trim();
 }
-
+  
+function normalizeKana(text) {
+  return String(text)
+    .normalize("NFKC")
+    .replace(/[\u30A1-\u30F6]/g, char =>
+      String.fromCharCode(char.charCodeAt(0) - 0x60)
+    )
+    .toLowerCase();
+}
+  
 function hasDuplicates(names) {
   return new Set(names).size !== names.length;
 }
@@ -514,7 +523,7 @@ function rebuildIndex() {
 // ========================================
 
 function showSuggestions(input, box) {
-  const keyword = input.value.trim().toLowerCase();
+  const keyword = normalizeKana(input.value.trim());
   box.innerHTML = "";
 
   if (!keyword || !characters.length) {
@@ -523,7 +532,7 @@ function showSuggestions(input, box) {
   }
 
   const matches = characters
-    .filter(name => name.toLowerCase().includes(keyword))
+    .filter(name => normalizeKana(name).includes(keyword))
     .slice(0, 20);
 
   if (!matches.length) {
